@@ -1,7 +1,8 @@
 <template>
-  <div name="commonHeader" class="w-100% bg-#447ED9 h-50px flex flex-items-center justify-between">
+  <div name="commonHeader" class="commonHeader-wrap">
     <div class="flex ml-20px">
-      <div class="cursor-pointer h-50px flex flex-items-center">
+      <div class="bottomLine"></div>
+      <div class="items">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="24" height="24"
           style="fill: rgba(255,255,255,1);">
           <path
@@ -9,24 +10,24 @@
           </path>
         </svg>
       </div>
-      <div class="ml-50px cursor-pointer h-50px flex flex-items-center hover-bg-#fff">
+      <div class="ml-50px items">
         <span>你的项目名称</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="8" height="8"
           style="fill: rgba(255,255,255,1);">
           <path d="M15.942 25.6l-10.609-18.624h21.333z"></path>
         </svg>
       </div>
-      <div class="ml-100px cursor-pointer h-50px flex flex-items-center">
+      <div class="ml-100px items" @click="moveLine(4)" @mouseenter="moveLine(0)" @mouseleave="moveLine(3)">
         <span>应用概览</span>
       </div>
-      <div class="ml-100px cursor-pointer h-50px flex flex-items-center">
+      <div class="ml-100px items" @click="moveLine(4)" @mouseenter="moveLine(1)" @mouseleave="moveLine(3)">
         <span>关于我们</span>
       </div>
-      <div class="ml-100px cursor-pointer h-50px flex flex-items-center">
+      <div class="ml-100px items" @click="moveLine(4)" @mouseenter="moveLine(2)" @mouseleave="moveLine(3)">
         <span>帮助文档</span>
       </div>
     </div>
-    <div class="flex flex-items-center">
+    <div class="flex flex-items-center user_info">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="64 64 896 896" width="20" height="20"
         style="fill: rgba(0, 0, 0, 1);">
         <path
@@ -39,22 +40,81 @@
           d="M816 768h-24V428c0-141.1-104.3-257.7-240-277.1V112c0-22.1-17.9-40-40-40s-40 17.9-40 40v38.9c-135.7 19.4-240 136-240 277.1v340h-24c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h216c0 61.8 50.2 112 112 112s112-50.2 112-112h216c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM512 888c-26.5 0-48-21.5-48-48h96c0 26.5-21.5 48-48 48zM304 768V428c0-55.6 21.6-107.8 60.9-147.1S456.4 220 512 220c55.6 0 107.8 21.6 147.1 60.9S720 372.4 720 428v340H304z">
         </path>
       </svg>
-      <div>
+      <div class="user_header">
         <img src="https://dummyimage.com/400X400" alt="">
       </div>
+      <span>用户名</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
+import { ref } from 'vue'
+const bottomLine = ref<number[]>([273, 273])
+const linePositionList = ref<number[]>([273, 430, 588])
+function moveLine(num: number) {
+  if (num === 3) {
+    bottomLine.value[0] = bottomLine.value[1]
+  } else if (num === 4) {
+    bottomLine.value[1] = bottomLine.value[0]
+  } else {
+    bottomLine.value[0] = linePositionList.value[num]
+  }
+}
 </script>
 
 <style scoped>
+.commonHeader-wrap {
+  position: relative;
+  width: 100%;
+  background-color: #447ed9;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 span {
   line-height: 20px;
   color: #fff;
   font-size: 14px;
   font-family: Roboto;
+}
+
+.bottomLine {
+  position: absolute;
+  left: v-bind(bottomLine[0] + 'px');
+  top: 45px;
+  width: 80px;
+  height: 3px;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.items {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user_header {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user_header img {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.user_info>* {
+  margin: 0 20px 0 0;
+  cursor: pointer;
 }
 </style>

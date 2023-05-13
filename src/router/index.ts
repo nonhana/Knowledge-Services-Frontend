@@ -13,7 +13,12 @@ const routes = [
   {
     path: '/institutionalMap',
     name: 'institutionalMap',
-    component: () => import('../pages/institutionalMap/index.vue')
+    component: () => import('../pages/institutionalMap/index.vue'),
+    children: [{
+      path: '/institutionalMap/index',
+      name: 'institutionalMapIndex',
+      component: () => import('../components/institutionalMap/firstPageMain.vue')
+    }]
   },
   {
     path: '/ICNavigation',
