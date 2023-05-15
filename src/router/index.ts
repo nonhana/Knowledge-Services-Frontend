@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router"
+import { createRouter, createWebHistory } from "vue-router"
 
 const routes = [
   {
@@ -13,6 +13,7 @@ const routes = [
   {
     path: '/institutionalMap',
     name: 'institutionalMap',
+    redirect: '/institutionalMap/index',
     component: () => import('../pages/institutionalMap/index.vue'),
     children: [{
       path: '/institutionalMap/index',
@@ -57,7 +58,7 @@ const routes = [
   }
 ]
 export const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: routes
 })
 

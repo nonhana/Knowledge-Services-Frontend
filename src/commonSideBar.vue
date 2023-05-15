@@ -168,8 +168,14 @@
 </template>
 
 <script setup lang="ts">
+import router from './router';
 function menuItemClick(e: any) {
-  console.log(JSON.parse(JSON.stringify(e)))
+  const index = JSON.parse(JSON.stringify(e)).index
+  if (index === '1-1') {
+    router.push({
+      path: '/institutionalMap'
+    })
+  }
 }
 </script>
 
