@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import commonHeader from './commonHeader.vue';
-import commonSideBar from './commonSideBar.vue';
+import commonHeader from "./commonHeader.vue";
+import commonSideBar from "./commonSideBar.vue";
 </script>
 
 <template>
@@ -14,7 +14,7 @@ import commonSideBar from './commonSideBar.vue';
         <commonSideBar />
       </el-aside>
       <el-main>
-        <router-view></router-view>
+        <router-view />
       </el-main>
     </el-container>
   </el-container>
