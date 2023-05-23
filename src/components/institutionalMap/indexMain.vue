@@ -2,7 +2,7 @@
   <div name="firstPageMain" class="firstPageMain-wrap">
     <mainHeader title="制度地图" update="2020-04-21 10:34" />
 
-    <el-row style="width: 90%" type="flex" justify="space-between">
+    <el-row style="width: 100%" type="flex" justify="space-between">
       <div style="width: 316px">
         <el-row style="padding: 10px 0 0 10px">
           <span class="s-title">国家法律</span>
@@ -164,7 +164,7 @@
 
     <el-row
       type="flex"
-      style="width: 90%; align-items: center; margin: 58px 0 22px 0"
+      style="width: 100%; align-items: center; margin: 58px 0 22px 0"
     >
       <span style="margin: 0 0 0 25px" class="t-title">单位/企业制度</span>
       <svg
@@ -178,7 +178,7 @@
       </svg>
     </el-row>
 
-    <el-row type="flex" style="width: 90%">
+    <el-row type="flex" style="width: 100%">
       <el-select
         v-model="choosedProvince"
         style="margin: 0 30px"
@@ -229,8 +229,10 @@
       </el-select>
     </el-row>
 
-    <el-row type="flex" style="width: 90%; margin: 10px 0 0 0">
+    <el-row type="flex" style="width: 100%; margin: 10px 0 0 0">
       <span
+        @click="choosedFifth = item.value"
+        :class="{ active: choosedFifth === item.value }"
         class="fifth-choices"
         v-for="(item, index) in fifthChoices"
         :key="index"
@@ -238,7 +240,7 @@
       >
     </el-row>
 
-    <el-row type="flex" style="width: 90%">
+    <el-row type="flex" style="width: 100%">
       <institutionalMapItem
         v-for="(item, index) in institutionItemList"
         :key="index"
@@ -982,7 +984,7 @@ const institutionItemList = ref<
 <style scoped>
 .firstPageMain-wrap {
   position: relative;
-  width: 100%;
+  width: 1300px;
 }
 
 span {
@@ -1023,6 +1025,10 @@ span {
 }
 
 .fifth-choices:hover {
+  color: #447ed9;
+}
+
+.active {
   color: #447ed9;
 }
 </style>

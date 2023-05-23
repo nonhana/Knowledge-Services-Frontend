@@ -1,6 +1,6 @@
 <template>
   <el-scrollbar>
-    <el-menu :default-openeds="['1']">
+    <el-menu>
       <el-sub-menu index="1">
         <template #title>
           <svg
@@ -49,7 +49,7 @@
           >卫健委制度手册</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu index="2">
+      <el-sub-menu @click="menuClick(1)" index="2">
         <template #title>
           <svg
             class="mr-10px"
@@ -94,7 +94,7 @@
           >元数据标准</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu index="3">
+      <el-sub-menu @click="menuClick(2)" index="3">
         <template #title>
           <svg
             class="mr-10px"
@@ -124,7 +124,7 @@
           <span style="color: #447ed9">内控成熟度测试</span>
         </template>
       </el-sub-menu>
-      <el-sub-menu index="4">
+      <el-sub-menu @click="menuClick(3)" index="4">
         <template #title>
           <svg
             class="mr-10px"
@@ -154,7 +154,7 @@
           <span style="color: #447ed9">内控培训服务</span>
         </template>
       </el-sub-menu>
-      <el-sub-menu index="5">
+      <el-sub-menu @click="menuClick(4)" index="5">
         <template #title>
           <svg
             class="mr-10px"
@@ -199,7 +199,7 @@
           >业务流程库</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu index="6">
+      <el-sub-menu @click="menuClick(5)" index="6">
         <template #title>
           <svg
             class="mr-10px"
@@ -241,7 +241,7 @@
           >案例教学服务</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu index="7">
+      <el-sub-menu @click="menuClick(6)" index="7">
         <template #title>
           <svg
             class="mr-10px"
@@ -279,14 +279,44 @@
 
 <script setup lang="ts">
 import router from "./router";
-function menuItemClick(e: any) {
+const menuItemClick = (e: any) => {
   const index = JSON.parse(JSON.stringify(e)).index;
-  if (index === "1-1") {
-    router.push({
-      path: "/institutionalMap",
-    });
+  switch (index) {
+    case "1-1":
+      console.log(index === "1-1");
+      router.push({
+        path: "/institutionalMap/nationalMap",
+      });
+      break;
+    case "1-2":
+      console.log(index === "1-2");
+      router.push({
+        path: "/institutionalMap/govPolicyMap",
+      });
+      break;
+    case "1-3":
+      console.log(index === "1-3");
+      router.push({
+        path: "/institutionalMap/industryRegulationsMap",
+      });
+      break;
+    case "1-4":
+      console.log(index === "1-4");
+      router.push({
+        path: "/institutionalMap/orgSystemMap",
+      });
+      break;
   }
-}
+};
+const menuClick = (num: number) => {
+  switch (num) {
+    case 0:
+      router.push({
+        path: "/institutionalMap/index",
+      });
+      break;
+  }
+};
 </script>
 
 <style scoped>

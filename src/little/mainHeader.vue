@@ -14,7 +14,7 @@
         />
       </svg>
       <span style="margin: 5px">更新时间：{{ props.update }}</span>
-      <span class="refresh">刷新</span>
+      <span @click="refresh" class="refresh">刷新</span>
     </div>
   </el-row>
 </template>
@@ -25,6 +25,10 @@ const props = defineProps<{
   title: string;
   update: string;
 }>();
+// 刷新页面按钮
+const refresh = () => {
+  window.location.reload();
+};
 </script>
 
 <style scoped>

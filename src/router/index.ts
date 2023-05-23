@@ -27,6 +27,26 @@ const routes = [
         component: () =>
           import("../components/institutionalMap/nationalMapMain.vue"),
       },
+      {
+        path: "/institutionalMap/govPolicyMap",
+        name: "institutionalMapGovPolicyMap",
+        component: () =>
+          import("../components/institutionalMap/govPolicyMapMain.vue"),
+      },
+      {
+        path: "/institutionalMap/industryRegulationsMap",
+        name: "institutionalMapIndustryRegulationsMap",
+        component: () =>
+          import(
+            "../components/institutionalMap/industryRegulationsMapMain.vue"
+          ),
+      },
+      {
+        path: "/institutionalMap/orgSystemMap",
+        name: "institutionalMapOrgSystemMap",
+        component: () =>
+          import("../components/institutionalMap/orgSystemMapMain.vue"),
+      },
     ],
   },
   {

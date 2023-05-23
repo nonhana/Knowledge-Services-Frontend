@@ -4,7 +4,6 @@ import commonSideBar from "./commonSideBar.vue";
 </script>
 
 <template>
-  <!-- el-container页面基础布局 -->
   <el-container class="el-container">
     <el-header>
       <commonHeader />
@@ -42,5 +41,6 @@ body {
 
 .el-container .el-main {
   padding: 10px;
+  margin: 0 0 30px 0;
 }
 </style>
