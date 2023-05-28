@@ -3,7 +3,7 @@
     name="industryRegulationsMapMain"
     class="industryRegulationsMapMain-wrap"
   >
-    <mainHeader title="政府政策地图" update="2020-04-21 10:31" />
+    <mainHeader title="行业规章地图" update="2020-04-21 10:31" />
 
     <el-row style="width: 100%; margin: 30px 0 0 0">
       <div class="filter-title-list" style="width: 110px">
@@ -66,7 +66,7 @@
             <el-select
               v-model="choosedPublish"
               style="margin: 0 0 0 30px"
-              placeholder="请选择省份"
+              placeholder="请选择发布状态"
             >
               <el-option
                 v-for="item in publishChoices"
@@ -84,7 +84,10 @@
             />
           </div>
           <div>
-            <el-button style="margin: 0 0 0 60px" @click="search()"
+            <el-button
+              type="primary"
+              style="margin: 0 0 0 60px"
+              @click="search()"
               >搜索</el-button
             >
           </div>

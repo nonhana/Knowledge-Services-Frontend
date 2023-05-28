@@ -63,7 +63,7 @@
             <el-select
               v-model="choosedPublish"
               style="margin: 0 0 0 30px"
-              placeholder="请选择省份"
+              placeholder="发布状态"
             >
               <el-option
                 v-for="item in publishChoices"
@@ -81,7 +81,10 @@
             />
           </div>
           <div>
-            <el-button style="margin: 0 0 0 60px" @click="search()"
+            <el-button
+              type="primary"
+              style="margin: 0 0 0 60px"
+              @click="search()"
               >搜索</el-button
             >
           </div>

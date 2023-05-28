@@ -1,6 +1,9 @@
 <template>
   <el-scrollbar>
-    <el-menu>
+    <el-menu
+      :default-active="currentIndex"
+      :default-openeds="['1', '2', '5', '6', '7']"
+    >
       <el-sub-menu index="1">
         <template #title>
           <svg
@@ -30,26 +33,27 @@
           </svg>
           <span style="color: #447ed9">制度地图</span>
         </template>
-        <el-menu-item @click="menuItemClick" index="1-1"
+        <el-menu-item @click="menuItemClick" index="1-1">首页</el-menu-item>
+        <el-menu-item @click="menuItemClick" index="1-2"
           >国家法律地图</el-menu-item
         >
-        <el-menu-item @click="menuItemClick" index="1-2"
+        <el-menu-item @click="menuItemClick" index="1-3"
           >政府政策地图</el-menu-item
         >
-        <el-menu-item @click="menuItemClick" index="1-3"
+        <el-menu-item @click="menuItemClick" index="1-4"
           >行业规章地图</el-menu-item
         >
-        <el-menu-item @click="menuItemClick" index="1-4"
+        <el-menu-item @click="menuItemClick" index="1-5"
           >单位制度地图</el-menu-item
         >
-        <el-menu-item @click="menuItemClick" index="1-5"
+        <el-menu-item @click="menuItemClick" index="1-6"
           >卫健委制度指南</el-menu-item
         >
-        <el-menu-item @click="menuItemClick" index="1-6"
+        <el-menu-item @click="menuItemClick" index="1-7"
           >卫健委制度手册</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu @click="menuClick(1)" index="2">
+      <el-sub-menu index="2">
         <template #title>
           <svg
             class="mr-10px"
@@ -94,7 +98,7 @@
           >元数据标准</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu @click="menuClick(2)" index="3">
+      <el-menu-item @click="menuItemClick" style="height: 56px" index="3">
         <template #title>
           <svg
             class="mr-10px"
@@ -123,8 +127,8 @@
           </svg>
           <span style="color: #447ed9">内控成熟度测试</span>
         </template>
-      </el-sub-menu>
-      <el-sub-menu @click="menuClick(3)" index="4">
+      </el-menu-item>
+      <el-menu-item @click="menuItemClick" style="height: 56px" index="4">
         <template #title>
           <svg
             class="mr-10px"
@@ -153,8 +157,8 @@
           </svg>
           <span style="color: #447ed9">内控培训服务</span>
         </template>
-      </el-sub-menu>
-      <el-sub-menu @click="menuClick(4)" index="5">
+      </el-menu-item>
+      <el-sub-menu index="5">
         <template #title>
           <svg
             class="mr-10px"
@@ -199,7 +203,7 @@
           >业务流程库</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu @click="menuClick(5)" index="6">
+      <el-sub-menu index="6">
         <template #title>
           <svg
             class="mr-10px"
@@ -241,7 +245,7 @@
           >案例教学服务</el-menu-item
         >
       </el-sub-menu>
-      <el-sub-menu @click="menuClick(6)" index="7">
+      <el-sub-menu index="7">
         <template #title>
           <svg
             class="mr-10px"
@@ -278,45 +282,41 @@
 </template>
 
 <script setup lang="ts">
+import { onBeforeMount, ref } from "vue";
 import router from "./router";
+
+// Menu的跳转路径数组
+const pathList: string[][] = [
+  [
+    "/institutionalMap/index",
+    "/institutionalMap/nationalMap",
+    "/institutionalMap/govPolicyMap",
+    "/institutionalMap/industryRegulationsMap",
+    "/institutionalMap/orgSystemMap",
+  ],
+];
+
+// 点击菜单栏选项，跳转至指定页面
 const menuItemClick = (e: any) => {
-  const index = JSON.parse(JSON.stringify(e)).index;
-  switch (index) {
-    case "1-1":
-      console.log(index === "1-1");
-      router.push({
-        path: "/institutionalMap/nationalMap",
-      });
-      break;
-    case "1-2":
-      console.log(index === "1-2");
-      router.push({
-        path: "/institutionalMap/govPolicyMap",
-      });
-      break;
-    case "1-3":
-      console.log(index === "1-3");
-      router.push({
-        path: "/institutionalMap/industryRegulationsMap",
-      });
-      break;
-    case "1-4":
-      console.log(index === "1-4");
-      router.push({
-        path: "/institutionalMap/orgSystemMap",
-      });
-      break;
-  }
+  const index = [...JSON.parse(JSON.stringify(e)).index];
+  router.push({
+    path: pathList[Number(index[0]) - 1][Number(index[2]) - 1],
+  });
 };
-const menuClick = (num: number) => {
-  switch (num) {
-    case 0:
-      router.push({
-        path: "/institutionalMap/index",
-      });
+// 在首次进入页面/刷新页面时，读取路由数据
+let currentIndex = ref<string>("1-1");
+onBeforeMount(() => {
+  // window.location.pathname获取当前路径
+  const currentPath = window.location.pathname;
+  for (let i = 0; i < pathList.length; i++) {
+    const innerArray = pathList[i];
+    const index = innerArray.indexOf(currentPath);
+    if (index !== -1) {
+      currentIndex.value = `${i + 1}-${index + 1}`;
       break;
+    }
   }
-};
+});
 </script>
 
 <style scoped>

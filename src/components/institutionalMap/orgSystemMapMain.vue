@@ -2,13 +2,65 @@
   <div name="orgSystemMapMain" class="orgSystemMapMain-wrap">
     <mainHeader title="单位制度地图" update="2020-04-21 10:31" />
 
+    <el-row style="width: 100%; margin: 30px 0 0 0" justify="space-between">
+      <div style="margin: 0 0 0 30px">
+        <el-select ref="drop" v-model="choosedVersion" placeholder="省份选择">
+          <el-option
+            v-for="item in versionChoices"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
+      <div>
+        <el-select ref="drop" v-model="choosedCity" placeholder="城市选择">
+          <el-option
+            v-for="item in cityChoices"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
+      <div>
+        <el-select
+          ref="drop"
+          v-model="choosedIssuingAgency"
+          placeholder="发文单位选择"
+        >
+          <el-option
+            v-for="item in issuingAgencyChoices"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
+      <div>
+        <el-select
+          ref="drop"
+          v-model="choosedDepartment"
+          placeholder="部门选择"
+        >
+          <el-option
+            v-for="item in departmentChoices"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </div>
+      <el-button-group>
+        <el-button @click="openActions(0)" type="primary">展开</el-button>
+        <el-button @click="openActions(1)">折叠</el-button>
+      </el-button-group>
+    </el-row>
+
     <el-row style="width: 100%; margin: 30px 0 0 0">
       <div class="filter-title-list" style="width: 110px">
         <div>
           <span>类别</span>
-        </div>
-        <div>
-          <span>行业</span>
         </div>
         <div>
           <span>时间</span>
@@ -31,26 +83,20 @@
         <el-row class="filter-line">
           <span
             @click="addFilter(1, item, index)"
-            v-for="(item, index) in filterItems.industry"
+            v-for="(item, index) in filterItems.time"
             :key="index"
             :class="{ active: selectedIndex[1] === index }"
             >{{ item }}</span
           >
         </el-row>
 
-        <el-row class="filter-line">
-          <span
-            @click="addFilter(2, item, index)"
-            v-for="(item, index) in filterItems.time"
-            :key="index"
-            :class="{ active: selectedIndex[2] === index }"
-            >{{ item }}</span
-          >
-        </el-row>
-
         <el-row class="filter-line" justify="start">
           <div style="margin: 0 0 0 40px">
-            <el-select v-model="choosedVersion" placeholder="请选择省份">
+            <el-select
+              ref="drop"
+              v-model="choosedVersion"
+              placeholder="请选择省份"
+            >
               <el-option
                 v-for="item in versionChoices"
                 :key="item.value"
@@ -61,9 +107,10 @@
           </div>
           <div>
             <el-select
+              ref="drop"
               v-model="choosedPublish"
               style="margin: 0 0 0 30px"
-              placeholder="请选择省份"
+              placeholder="请选择状态"
             >
               <el-option
                 v-for="item in publishChoices"
@@ -81,7 +128,10 @@
             />
           </div>
           <div>
-            <el-button style="margin: 0 0 0 60px" @click="search()"
+            <el-button
+              type="primary"
+              style="margin: 0 0 0 60px"
+              @click="search()"
               >搜索</el-button
             >
           </div>
@@ -104,7 +154,19 @@
       </el-table>
     </el-row>
 
-    <el-row style="width: 100%; display: flex; justify-content: end">
+    <el-row
+      style="
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+      "
+    >
+      <div style="margin: 0 12px 0 0">
+        <el-button size="small" type="primary">增加</el-button>
+        <el-button size="small" type="primary">删除</el-button>
+        <el-button size="small" type="primary">修改</el-button>
+      </div>
       <el-pagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
@@ -127,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, getCurrentInstance, onMounted, toRef } from "vue";
 import institutionalMapDIY from "../../little/institutionalMapDIY.vue";
 const filterItems = ref({
   type: [
@@ -141,13 +203,11 @@ const filterItems = ref({
     "建设管理",
     "合同管理",
   ],
-  industry: ["不限", "医疗", "教育", "其他"],
   time: ["不限", "一年内", "三年内", "十年内", "十年以上"],
 });
 // 筛选的参数对象
 interface filterParams {
   type: string;
-  industry: string;
   time: string;
   version: string;
   publish: number;
@@ -155,12 +215,12 @@ interface filterParams {
 }
 let paramsList: filterParams = {
   type: filterItems.value.type[0],
-  industry: filterItems.value.industry[0],
   time: filterItems.value.time[0],
   version: "",
   publish: 0,
   keyword: "",
 };
+// el-select的列表↓
 const versionChoices = [
   {
     value: "浙江省",
@@ -288,6 +348,87 @@ const versionChoices = [
   },
 ];
 let choosedVersion = ref<string>("");
+const cityChoices = [
+  {
+    label: "杭州市",
+    value: "杭州市",
+  },
+  {
+    label: "宁波市",
+    value: "宁波市",
+  },
+  {
+    label: "温州市",
+    value: "温州市",
+  },
+  {
+    label: "绍兴市",
+    value: "绍兴市",
+  },
+  {
+    label: "湖州市",
+    value: "湖州市",
+  },
+  {
+    label: "嘉兴市",
+    value: "嘉兴市",
+  },
+  {
+    label: "金华市",
+    value: "金华市",
+  },
+  {
+    label: "衢州市",
+    value: "衢州市",
+  },
+  {
+    label: "舟山市",
+    value: "舟山市",
+  },
+  {
+    label: "台州市",
+    value: "台州市",
+  },
+  {
+    label: "丽水市",
+    value: "丽水市",
+  },
+];
+let choosedCity = ref<string>("");
+const issuingAgencyChoices = [
+  {
+    label: "浙江省卫健委",
+    value: "浙江省卫健委",
+  },
+  {
+    label: "浙江省财政局",
+    value: "浙江省财政局",
+  },
+  {
+    label: "浙江省林业局",
+    value: "浙江省林业局",
+  },
+];
+let choosedIssuingAgency = ref<string>("");
+const departmentChoices = [
+  {
+    label: "浙江大学第一附属医院",
+    value: "浙江大学第一附属医院",
+  },
+  {
+    label: "浙江省邵逸夫医院",
+    value: "浙江省邵逸夫医院",
+  },
+  {
+    label: "浙江省同德医院",
+    value: "浙江省同德医院",
+  },
+  {
+    label: "浙江省人民医院",
+    value: "浙江省人民医院",
+  },
+];
+let choosedDepartment = ref<string>("");
 const publishChoices = [
   {
     label: "已发布",
@@ -299,8 +440,19 @@ const publishChoices = [
   },
 ];
 let choosedPublish = ref<string>("");
+// 展开或关闭所有的el-select
+const openActions = (num: number) => {
+  switch (num) {
+    case 0:
+      console.log(num);
+      break;
+    case 1:
+      console.log(num);
+      break;
+  }
+};
 let keyword = ref<string>("");
-let selectedIndex = ref<number[]>([0, 0, 0]);
+let selectedIndex = ref<number[]>([0, 0]);
 // 点击某筛选标签，进行筛选条件的赋值
 const addFilter = (choice: number, item: string, index: number) => {
   switch (choice) {
@@ -310,10 +462,6 @@ const addFilter = (choice: number, item: string, index: number) => {
       break;
     case 1:
       selectedIndex.value[1] = index;
-      paramsList.industry = item;
-      break;
-    case 2:
-      selectedIndex.value[2] = index;
       paramsList.time = item;
       break;
   }
@@ -414,6 +562,13 @@ const detailsInfo = {
     },
   ],
 };
+
+let instance = null;
+onMounted(() => {
+  instance = getCurrentInstance();
+  const details = toRef(instance?.ctx?.$refs.drop, "toggleMenu");
+  details.value;
+});
 </script>
 
 <style scoped lang="less">
@@ -424,7 +579,7 @@ const detailsInfo = {
 .filter-title-list {
   position: relative;
   width: 110px;
-  height: 220px;
+  height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -444,7 +599,7 @@ const detailsInfo = {
 .filter-line-list {
   position: relative;
   width: 85%;
-  height: 220px;
+  height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

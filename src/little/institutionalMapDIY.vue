@@ -38,7 +38,7 @@
           <el-select
             style="width: 140px"
             v-model="choosedRule"
-            placeholder="请选择省份"
+            placeholder="规则类型选择"
           >
             <el-option
               v-for="item in ruleChoices"
@@ -47,8 +47,16 @@
               :value="item.value"
             />
           </el-select>
-          <div style="background-color: #5677fc" class="circle-button">+</div>
-          <div style="background-color: #000" class="circle-button">-</div>
+          <div
+            @click="dialogVisible = true"
+            style="background-color: #5677fc"
+            class="circle-button"
+          >
+            <span>+</span>
+          </div>
+          <div style="background-color: #000" class="circle-button">
+            <span>-</span>
+          </div>
         </div>
         <div style="margin: 26px 0 0 0" class="input">
           <svg
@@ -84,22 +92,41 @@
             {{ content }}
           </span>
         </div>
-        <el-table
-          :data="referenceData"
-          show-header="false"
-          border
-          style="width: 260px"
-        >
-          <el-table-column prop="id" width="120" />
-          <el-table-column prop="title" width="100" />
-        </el-table>
+        <table>
+          <tr v-for="(item, index) in referenceData" :key="index">
+            <td style="width: 50px">参考{{ index }}</td>
+            <td>{{ item }}</td>
+          </tr>
+          <!-- 添加更多行和单元格，根据需要重复上述<tr>和<td>的结构 -->
+        </table>
       </div>
     </el-row>
+  </div>
+
+  <!-- 新建规则弹窗，在el-dialog外层套一层div，便可以进行样式穿透 -->
+  <div>
+    <el-dialog
+      v-model="dialogVisible"
+      title="规则内容"
+      :before-close="handleClose"
+      class="aboutDialog"
+    >
+      <span>This is a message</span>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="dialogVisible = false">
+            Confirm
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps, onMounted } from "vue";
+import ElMessageBox from "element-plus";
 // 用props来接收父组件传递过来的数据
 const props = defineProps<{
   itemInfo: {
@@ -134,17 +161,29 @@ let choosedRule = ref<string>("");
 let keywords = ref<string>("");
 // 参考数据
 const referenceData = [
-  { id: "参考1", title: "中华人民共和国会计法" },
-  { id: "参考2", title: "中华人民共和国公司法" },
-  { id: "参考3", title: "中华人民共和国合同法" },
-  { id: "参考4", title: "中华人民共和国预算法" },
-  { id: "参考5", title: "中华人民共和国政府采购法实施条例" },
-  { id: "参考6", title: "中华人民共和国政府采购法实施条例" },
-  { id: "参考7", title: "中华人民共和国政府采购法实施条例" },
-  { id: "参考8", title: "公立医院预决算报告制度暂行规定" },
-  { id: "参考9", title: "电子文件管理暂行办法" },
-  { id: "参考10", title: "党政机关公务用车管理办法" },
+  "中华人民共和国会计法",
+  "中华人民共和国公司法",
+  "中华人民共和国合同法",
+  "中华人民共和国预算法",
+  "中华人民共和国政府采购法实施条例",
+  "中华人民共和国政府采购法实施条例",
+  "中华人民共和国政府采购法实施条例",
+  "公立医院预决算报告制度暂行规定",
+  "电子文件管理暂行办法",
+  "党政机关公务用车管理办法",
 ];
+// 弹窗相关参数
+const dialogVisible = ref<boolean>(false);
+const handleClose = (done: () => void) => {
+  ElMessageBox.confirm("确定要关闭当前页面吗？")
+    .then(() => {
+      done();
+    })
+    .catch(() => {
+      // catch error
+    });
+};
+// 生命周期钩子
 onMounted(() => {
   console.log(props.itemInfo);
 });
@@ -171,6 +210,10 @@ onMounted(() => {
   align-items: center;
   color: #fff;
   cursor: pointer;
+  span {
+    font-size: 16px;
+    margin: -2px 0 0 0; /* 微调 */
+  }
 }
 .input {
   width: 180px;
@@ -181,6 +224,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.24);
   input {
     width: 150px;
     height: 48px;
@@ -207,5 +251,33 @@ onMounted(() => {
     font-family: Microsoft Yahei;
     word-break: break-all;
   }
+}
+
+table {
+  border-collapse: collapse; /* 合并单元格边框 */
+  width: 230px; /* 表格宽度 */
+  height: 100%; /* 表格高度 */
+  overflow-y: scroll; /* 垂直滚动条 */
+}
+
+td {
+  border: 1px solid #9e9e9e; /* 单元格边框样式 */
+  text-align: center; /* 水平居中 */
+  vertical-align: middle; /* 垂直居中 */
+  padding: 5px; /* 内间距5px */
+  font-size: 14px; /* 字体大小 */
+  font-family: Microsoft Yahei; /* 字体 */
+}
+
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
+:deep(.el-dialog) {
+  width: 580px;
+  height: 300px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 100);
+  text-align: center;
 }
 </style>
