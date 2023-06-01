@@ -235,133 +235,20 @@
     </el-dialog>
   </div>
 
-  <!-- 编辑规则弹窗 -->
-  <div @click="cancelStep">
-    <el-dialog
-      v-model="editDialogVisible"
-      :before-close="editHandleClose"
-      class="editDialog"
-    >
-      <el-row type="flex">
-        <div>
-          <span class="editTitle">业务规则</span>
-        </div>
-        <div style="margin: 0 0 0 10px">
-          <el-input
-            style="width: 800px"
-            v-model="rule_content"
-            :autosize="{ minRows: 5, maxRows: 5 }"
-            type="textarea"
-            placeholder="请输入相应的规则内容"
-          />
-        </div>
-      </el-row>
-
-      <el-row type="flex" style="margin: 20px 0 0 0">
-        <div>
-          <span class="editTitle">业务流程</span>
-        </div>
-        <div style="margin: 0 0 0 10px; width: 800px">
-          <el-row>
-            <el-button>导入/更新流程图</el-button>
-          </el-row>
-          <el-row style="margin: 20px 0 0 0">
-            <div
-              style="
-                width: 100px;
-                height: 100px;
-                padding: 10px 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <span class="editSecondTitle">采购人</span>
-              <span class="editSecondTitle">审核人</span>
-            </div>
-            <div style="margin: 0 0 0 20px" class="stepVisable">
-              <div
-                @dblclick="stepInput = true"
-                @mouseenter="stepHovering = true"
-                @mouseleave="stepHovering = false"
-                @click="choosed_step = index"
-                v-for="(item, index) in stepList"
-                :key="index"
-                :class="{
-                  'step-active': choosed_step === index,
-                  'top-step': item.type === 0,
-                  'bottom-step': item.type === 1,
-                }"
-              >
-                <span v-if="!stepInput">{{ item.name }}</span>
-                <input
-                  style="width: 100%"
-                  v-else
-                  type="text"
-                  v-model="item.name"
-                />
-              </div>
-            </div>
-            <div
-              style="
-                width: 100px;
-                height: 100px;
-                padding: 10px 0;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                align-items: center;
-              "
-            >
-              <div style="display: flex">
-                <div
-                  @click="stepActions(0, 0)"
-                  style="background-color: #5677fc"
-                  class="circle-button"
-                >
-                  <span>+</span>
-                </div>
-                <div
-                  @click="stepActions(1, choosed_step)"
-                  style="background-color: #000"
-                  class="circle-button"
-                >
-                  <span>-</span>
-                </div>
-              </div>
-              <div style="display: flex">
-                <div style="background-color: #5677fc" class="circle-button">
-                  <span>+</span>
-                </div>
-                <div style="background-color: #000" class="circle-button">
-                  <span>-</span>
-                </div>
-              </div>
-            </div>
-          </el-row>
-        </div>
-      </el-row>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button round @click="editDialogActions(0)">取消</el-button>
-          <el-button round type="primary" @click="editDialogActions(1)">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-  </div>
+  <systemEditingWindow
+    v-model:changeVisable="editDialogVisible"
+    :visable="editDialogVisible"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps, onMounted } from "vue";
 import { ElMessageBox } from "element-plus";
-import { castArray } from "element-plus/es/utils/arrays.js";
+import systemEditingWindow from "./systemEditingWindow.vue";
 // hover控制是否显示编辑按钮
 let itemHovering = ref<string>("");
 // 点击编辑按钮
+const editDialogVisible = ref<boolean>(false);
 const editItem = (index: string) => {
   console.log(index);
   editDialogVisible.value = true;
@@ -411,6 +298,7 @@ const referenceData = [
   "电子文件管理暂行办法",
   "党政机关公务用车管理办法",
 ];
+
 // 添加规则弹窗相关
 const contentDialogVisible = ref<boolean>(false);
 const contentHandleClose = (done: () => void) => {
@@ -434,66 +322,6 @@ const contentDialogActions = (num: number) => {
 let rule_content = ref<string>(
   " 第一条 为了规范会计行为，保证会计资料真实、完整，加强经济管理和财务管理，提高经济效益，维护社会主义市场经济秩序，制定本法。    第二条 国家机关、社会团体、公司、企业、事业单位和其他组织（以下统称单位）必须依照本法办理会计事务。    第三条 各单位必须依法设置会计账簿，并保证其真实、完整。    第四条 单位负责人对本单位的会计工作和会计资料的真实性、完整性负责。    第五条 会计机构、会计人员依照本法规定进行会计核算，"
 );
-// 编辑规则弹窗相关
-const editDialogVisible = ref<boolean>(true);
-const editHandleClose = (done: () => void) => {
-  ElMessageBox.confirm("您的规则暂未添加，确认关闭？")
-    .then(() => {
-      done();
-    })
-    .catch(() => {});
-};
-const editDialogActions = (num: number) => {
-  switch (num) {
-    case 0:
-      editDialogVisible.value = false;
-      break;
-    case 1:
-      editDialogVisible.value = false;
-      break;
-  }
-};
-let stepList = ref<
-  {
-    name: string;
-    type: number;
-  }[]
->([
-  {
-    name: "采购申请",
-    type: 0,
-  },
-  {
-    name: "采购审核",
-    type: 1,
-  },
-  {
-    name: "填写采购单",
-    type: 0,
-  },
-]);
-let choosed_step = ref<number>(-1);
-let stepHovering = ref<boolean>(false);
-const cancelStep = () => {
-  if (!stepHovering.value) {
-    choosed_step.value = -1;
-    stepInput.value = false;
-  }
-};
-const stepActions = (type: number, index: number) => {
-  switch (type) {
-    case 0:
-      stepList.value.push({
-        name: "新建步骤",
-        type: 0,
-      });
-      break;
-    case 1:
-      stepList.value.splice(index, 1);
-      break;
-  }
-};
-let stepInput = ref<boolean>(false);
 
 // 生命周期钩子
 onMounted(() => {
@@ -506,12 +334,14 @@ onMounted(() => {
   position: relative;
   width: 1300px;
 }
+
 .title {
   color: #000;
   font-size: 18px;
   font-family: SourceHanSansSC-regular;
   font-weight: bold;
 }
+
 .circle-button {
   width: 20px;
   height: 20px;
@@ -520,13 +350,14 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #fff;
   cursor: pointer;
   span {
+    color: #fff;
     font-size: 16px;
     margin: -2px 0 0 0; /* 微调 */
   }
 }
+
 .input {
   width: 180px;
   height: 40px;
@@ -625,99 +456,5 @@ td {
   bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
-}
-:deep(.editDialog.el-dialog) {
-  width: 971px;
-  height: 747px;
-  border-radius: 10px;
-  background-color: rgba(235, 240, 236, 100);
-  border: 1px solid rgba(15, 0, 0, 100);
-}
-:deep(.editDialog .el-dialog__body) {
-  color: rgba(96, 98, 102, 100);
-  line-height: 24px;
-  font-size: 14px;
-  font-family: Helvetica-regular;
-}
-:deep(.editDialog .el-dialog__header) {
-  margin: 0;
-  padding: 10px 20px;
-  height: 25px;
-  line-height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-:deep(.editDialog .el-dialog__title) {
-  color: rgba(48, 49, 51, 100);
-  font-size: 18px;
-  font-family: Helvetica-regular;
-}
-:deep(.editDialog .el-dialog__headerbtn .el-dialog__close) {
-  color: rgba(48, 49, 51, 100);
-}
-:deep(.editDialog .el-dialog__headerbtn:hover .el-dialog__close) {
-  color: rgba(48, 49, 51, 100);
-}
-:deep(.editDialog .el-dialog__headerbtn) {
-  top: 0px;
-}
-:deep(.editDialog .el-dialog__footer) {
-  position: absolute;
-  bottom: 0px;
-  left: 80%;
-}
-
-.editTitle {
-  color: rgba(16, 16, 16, 100);
-  font-size: 20px;
-  font-family: SourceHanSansSC-bold;
-  font-weight: bold;
-}
-
-.editSecondTitle {
-  color: rgba(16, 16, 16, 100);
-  font-size: 20px;
-  font-family: Roboto;
-}
-
-.stepVisable {
-  position: relative;
-  top: -20px;
-  width: 578px;
-  height: 118px;
-  padding: 20px 0;
-  border: 1px solid #9e9e9e;
-  border-radius: 10px;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  div {
-    cursor: pointer;
-    width: 60px;
-    height: 60px;
-    padding: 10px;
-    border-radius: 50%;
-    border: 3px solid rgba(161, 174, 164, 100);
-    background-color: rgba(255, 255, 255, 100);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    span {
-      color: rgba(15, 1, 1, 100);
-      text-align: center;
-      font-size: 20px;
-      font-family: Roboto;
-    }
-  }
-  .top-step {
-    margin: -60px 0 0 0;
-  }
-  .bottom-step {
-    margin: 60px 0 0 0;
-  }
-  .step-active {
-    background-color: beige;
-  }
 }
 </style>
