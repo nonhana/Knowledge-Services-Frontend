@@ -90,7 +90,7 @@
         <el-row class="listWindow">
           <ul>
             <li
-              v-for="(item, index) in GovernPolicies.filter(
+              v-for="(item, index) in governPolicies.filter(
                 (obj) => obj.province === province && obj.city === city
               )"
               :key="index"
@@ -251,8 +251,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
 import institutionalMapItem from "../../little/institutionalMapItem.vue";
+import {
+  getProvinceCityFilterListAPI,
+  getNationalMapListAPI,
+  getGovPolicyMapListAPI,
+  getIndustryRegulationsMapListAPI,
+  getOrgSystemFilterListAPI,
+  getOrgSystemMapListAPI,
+} from "../../api/institutionMap";
+import { ElMessage } from "element-plus";
+
+// 预定义好所有的请求参数
+let nationalMapParams = {
+  page: 1,
+  pageSize: 5,
+  status: 0,
+};
+let govPolicyMapParams = {
+  page: 1,
+  pageSize: 5,
+  positionCode: "0-0",
+};
+
 // 国家法律
 // 菜单栏
 var nationalLawsSelect = (key: string, keyPath: string[]) => {
@@ -274,68 +296,7 @@ var nationalLaws = ref<
     title: string;
     type: number;
   }[]
->([
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 2,
-  },
-]);
+>([]);
 // 政府政策
 // 菜单栏
 var GovernPoliciesSelect = (key: string, keyPath: string[]) => {
@@ -480,59 +441,13 @@ const cityList = ref<any[]>([
     ],
   },
 ]);
-var GovernPolicies = ref<
+var governPolicies = ref<
   {
     title: string;
     province: string;
     city: string;
   }[]
->([
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "杭州",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "杭州",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "杭州",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "宁波",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "宁波",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "浙江省",
-    city: "宁波",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "福建省",
-    city: "福州",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "福建省",
-    city: "福州",
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    province: "福建省",
-    city: "福州",
-  },
-]);
+>([]);
 function cityChange(city: string) {
   console.log(city);
 }
@@ -979,6 +894,29 @@ const institutionItemList = ref<
     },
   },
 ]);
+
+// 在onBeforeMount钩子内部，获取并处理好所有的数据
+onBeforeMount(() => {
+  getNationalMapListAPI(nationalMapParams).then((res: any) => {
+    if (res.data.result_code === 0) {
+      if (res.data.national_laws_list.length > 0) {
+        nationalLaws.value = res.data.national_laws_list;
+      }
+    } else {
+      ElMessage.error("获取国家法律列表失败");
+    }
+  });
+
+  getGovPolicyMapListAPI(govPolicyMapParams).then((res: any) => {
+    if (res.data.result_code === 0) {
+      if (res.data.gov_policy_laws_list.length > 0) {
+        governPolicies.value = res.data.gov_policy_list;
+      }
+    } else {
+      ElMessage.error("获取政府政策列表失败");
+    }
+  });
+});
 </script>
 
 <style scoped>

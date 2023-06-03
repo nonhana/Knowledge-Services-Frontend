@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import myAxios from "./axios";
 
 // 获取省份+城市的筛选条件列表

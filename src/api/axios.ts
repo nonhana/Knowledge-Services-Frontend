@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 function myAxios(axiosConfig: AxiosRequestConfig): Promise<AxiosResponse> {

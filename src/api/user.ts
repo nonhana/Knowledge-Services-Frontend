@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import myAxios from "./axios";
 
 // 用户登录
