@@ -82,7 +82,7 @@
           <el-radio-button
             v-for="(item, index) in cityList.filter(
               (obj) => obj.province === province
-            )[0].list"
+            )[0].city_list"
             :key="index"
             :label="item"
           />
@@ -365,7 +365,7 @@ const provinceList = ref<string[]>([
 const cityList = ref<any[]>([
   {
     province: "浙江省",
-    list: [
+    city_list: [
       "杭州",
       "宁波",
       "温州",
@@ -381,7 +381,7 @@ const cityList = ref<any[]>([
   },
   {
     province: "福建省",
-    list: [
+    city_list: [
       "福州",
       "厦门",
       "莆田",
@@ -395,7 +395,7 @@ const cityList = ref<any[]>([
   },
   {
     province: "广东省",
-    list: [
+    city_list: [
       "广州",
       "深圳",
       "珠海",
@@ -421,7 +421,7 @@ const cityList = ref<any[]>([
   },
   {
     province: "四川省",
-    list: [
+    city_list: [
       "成都",
       "自贡",
       "攀枝花",
@@ -447,7 +447,7 @@ const cityList = ref<any[]>([
   },
   {
     province: "江苏省",
-    list: [
+    city_list: [
       "南京",
       "无锡",
       "徐州",
@@ -465,7 +465,7 @@ const cityList = ref<any[]>([
   },
   {
     province: "河北省",
-    list: [
+    city_list: [
       "石家庄",
       "唐山",
       "秦皇岛",

@@ -298,7 +298,6 @@ const referenceData = [
   "电子文件管理暂行办法",
   "党政机关公务用车管理办法",
 ];
-
 // 添加规则弹窗相关
 const contentDialogVisible = ref<boolean>(false);
 const contentHandleClose = (done: () => void) => {
@@ -422,13 +421,13 @@ td {
   background-color: rgba(255, 255, 255, 100);
   text-align: center;
 }
-:deep(.el-dialog__body) {
+:deep(.contentDialog.el-dialog__body) {
   color: rgba(96, 98, 102, 100);
   line-height: 24px;
   font-size: 14px;
   font-family: Helvetica-regular;
 }
-:deep(.contentDialog.el-dialog__header) {
+:deep(.contentDialog .el-dialog__header) {
   margin: 0;
   padding: 10px 20px;
   height: 25px;
@@ -437,21 +436,21 @@ td {
   justify-content: center;
   align-items: center;
 }
-:deep(.contentDialog.el-dialog__title) {
+:deep(.contentDialog .el-dialog__title) {
   color: rgba(48, 49, 51, 100);
   font-size: 18px;
   font-family: Helvetica-regular;
 }
-:deep(.contentDialog.el-dialog__headerbtn .el-dialog__close) {
+:deep(.contentDialog .el-dialog__headerbtn .el-dialog__close) {
   color: rgba(48, 49, 51, 100);
 }
-:deep(.contentDialog.el-dialog__headerbtn:hover .el-dialog__close) {
+:deep(.contentDialog .el-dialog__headerbtn:hover .el-dialog__close) {
   color: rgba(48, 49, 51, 100);
 }
-:deep(.contentDialog.el-dialog__headerbtn) {
+:deep(.contentDialog .el-dialog__headerbtn) {
   top: 0px;
 }
-:deep(.contentDialog.el-dialog__footer) {
+:deep(.contentDialog .el-dialog__footer) {
   position: absolute;
   bottom: 0px;
   left: 50%;

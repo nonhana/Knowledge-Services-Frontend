@@ -1,5 +1,5 @@
+<!-- eslint-disable prettier/prettier -->
 <template>
-  <!-- 编辑规则弹窗 -->
   <div @click="cancelStep">
     <el-dialog
       v-model="editDialogVisible"
@@ -290,7 +290,7 @@
     </el-dialog>
   </div>
 </template>
-
+<!-- eslint-disable prettier/prettier -->
 <script setup lang="ts">
 import { ref, defineProps, watch, defineEmits } from "vue";
 import { ElMessageBox } from "element-plus";
@@ -538,7 +538,7 @@ const editMessage = (index: string) => {
   targetMessage.value = index;
 };
 </script>
-
+<!-- eslint-disable prettier/prettier -->
 <style scoped lang="less">
 .circle-button {
   width: 20px;

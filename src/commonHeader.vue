@@ -76,15 +76,16 @@
         />
       </svg>
       <div class="user_header">
-        <img src="https://dummyimage.com/400X400" alt="" />
+        <img :src="user_info.headphoto" alt="" />
       </div>
-      <span>用户名</span>
+      <span>{{ user_info.user_name }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+
 const bottomLine = ref<number[]>([273, 273]);
 const linePositionList = ref<number[]>([273, 430, 588]);
 function moveLine(num: number) {
@@ -96,6 +97,20 @@ function moveLine(num: number) {
     bottomLine.value[0] = linePositionList.value[num];
   }
 }
+
+let user_info = ref<any>({
+  user_id: 0,
+  account: "0",
+  user_name: "用户名",
+  email: "1111111@qq.com",
+  headphoto: "https://dummyimage.com/400X400",
+});
+
+onBeforeMount(() => {
+  if (localStorage.getItem("token")) {
+    user_info.value = JSON.parse(localStorage.getItem("user_info") || "{}");
+  }
+});
 </script>
 
 <style scoped>
