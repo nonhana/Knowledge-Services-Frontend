@@ -29,7 +29,7 @@ import { defineProps } from "vue";
 // 接收法律item
 const props = defineProps<{
   itemInfo: {
-    institution_id: number;
+    id: number;
     institution_title: string;
     institution_img: string;
     institution_info: string;

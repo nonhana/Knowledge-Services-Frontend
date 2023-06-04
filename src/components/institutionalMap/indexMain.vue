@@ -80,9 +80,7 @@
         </el-menu>
         <el-radio-group size="small" v-model="city" @change="cityChange">
           <el-radio-button
-            v-for="(item, index) in cityList.filter(
-              (obj) => obj.province === province
-            )[0].city_list"
+            v-for="(item, index) in cityListFilter"
             :key="index"
             :label="item"
           />
@@ -185,6 +183,7 @@
         placeholder="请选择省份"
       >
         <el-option
+          @click="filterClick(0)"
           v-for="item in provincesChoices"
           :key="item.value"
           :label="item.label"
@@ -197,6 +196,7 @@
         placeholder="请选择二级筛选条件"
       >
         <el-option
+          @click="filterClick(1)"
           v-for="item in secondChoices"
           :key="item.value"
           :label="item.label"
@@ -209,6 +209,7 @@
         placeholder="请选择三级筛选条件"
       >
         <el-option
+          @click="filterClick(2)"
           v-for="item in thirdChoices"
           :key="item.value"
           :label="item.label"
@@ -221,6 +222,7 @@
         placeholder="请选择四级筛选条件"
       >
         <el-option
+          @click="filterClick(3)"
           v-for="item in forthChoices"
           :key="item.value"
           :label="item.label"
@@ -231,7 +233,7 @@
 
     <el-row type="flex" style="width: 100%; margin: 10px 0 0 0">
       <span
-        @click="choosedFifth = item.value"
+        @click="finalChoosing(item)"
         :class="{ active: choosedFifth === item.value }"
         class="fifth-choices"
         v-for="(item, index) in fifthChoices"
@@ -274,6 +276,20 @@ let govPolicyMapParams = {
   pageSize: 5,
   positionCode: "0-0",
 };
+let industryRegulationsMapParams = {
+  page: 1,
+  pageSize: 5,
+  type: 0,
+};
+let orgSystemFilterParams = {
+  type: 0,
+  choice: 0,
+};
+let orgSystemMapParams = {
+  page: 1,
+  pageSize: 8,
+  type: "0-0-0-0-0",
+};
 
 // 国家法律
 // 菜单栏
@@ -303,6 +319,9 @@ var GovernPoliciesSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath);
   console.log(province, city);
   province.value = provinceList.value[Number(key)];
+  cityListFilter.value = cityList.value.filter(
+    (obj) => obj.province === province.value
+  )[0].city_list;
 };
 // 分页器
 var GovernPoliciescurrentPage = ref(1);
@@ -313,134 +332,11 @@ var GovernPoliciesSizeChange = (val: number) => {
 var GovernPoliciesCurrentChange = (val: number) => {
   console.log(`current page: ${val}`);
 };
-var province = ref("浙江省");
-var city = ref("杭州");
-const provinceList = ref<string[]>([
-  "浙江省",
-  "福建省",
-  "广东省",
-  "四川省",
-  "江苏省",
-  "河北省",
-]);
-const cityList = ref<any[]>([
-  {
-    province: "浙江省",
-    city_list: [
-      "杭州",
-      "宁波",
-      "温州",
-      "绍兴",
-      "湖州",
-      "嘉兴",
-      "金华",
-      "衢州",
-      "台州",
-      "丽水",
-      "舟山",
-    ],
-  },
-  {
-    province: "福建省",
-    city_list: [
-      "福州",
-      "厦门",
-      "莆田",
-      "三明",
-      "泉州",
-      "漳州",
-      "南平",
-      "龙岩",
-      "宁德",
-    ],
-  },
-  {
-    province: "广东省",
-    city_list: [
-      "广州",
-      "深圳",
-      "珠海",
-      "汕头",
-      "韶关",
-      "佛山",
-      "江门",
-      "湛江",
-      "茂名",
-      "肇庆",
-      "惠州",
-      "梅州",
-      "汕尾",
-      "河源",
-      "阳江",
-      "清远",
-      "东莞",
-      "中山",
-      "潮州",
-      "揭阳",
-      "云浮",
-    ],
-  },
-  {
-    province: "四川省",
-    city_list: [
-      "成都",
-      "自贡",
-      "攀枝花",
-      "泸州",
-      "德阳",
-      "绵阳",
-      "广元",
-      "遂宁",
-      "内江",
-      "乐山",
-      "南充",
-      "眉山",
-      "宜宾",
-      "广安",
-      "达州",
-      "雅安",
-      "巴中",
-      "资阳",
-      "阿坝藏族羌族自治州",
-      "甘孜藏族自治州",
-      "凉山彝族自治州",
-    ],
-  },
-  {
-    province: "江苏省",
-    city_list: [
-      "南京",
-      "无锡",
-      "徐州",
-      "常州",
-      "苏州",
-      "南通",
-      "连云港",
-      "淮安",
-      "盐城",
-      "扬州",
-      "镇江",
-      "泰州",
-      "宿迁",
-    ],
-  },
-  {
-    province: "河北省",
-    city_list: [
-      "石家庄",
-      "唐山",
-      "秦皇岛",
-      "邯郸",
-      "邢台",
-      "保定",
-      "张家口",
-      "承德",
-      "沧州",
-      "廊坊",
-      "衡水",
-    ],
-  },
-]);
+var province = ref("");
+var city = ref("");
+var provinceList = ref<string[]>([]);
+var cityList = ref<any[]>([]);
+var cityListFilter = ref<any[]>([]);
 var governPolicies = ref<
   {
     title: string;
@@ -472,320 +368,27 @@ var industryReg = ref<
     title: string;
     type: number;
   }[]
->([
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 0,
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 1,
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 2,
-  },
-  {
-    title: "中华人民共和国会计法（2017年）",
-    type: 3,
-  },
-  {
-    title: "中华人民共和国预算法（2014年）",
-    type: 3,
-  },
-  {
-    title: "中华人民共和国合同法（1999年）",
-    type: 3,
-  },
-  {
-    title: "中华人民共和国公司法",
-    type: 3,
-  },
-  {
-    title: "中华人民共和国银行法",
-    type: 3,
-  },
-]);
+>([]);
 
 // 单位、企业制度
-const choosedProvince = ref("");
-const provincesChoices = [
+let choosedProvince = ref("");
+let choosedProvinceId = ref(0);
+let provincesChoices = ref<any[]>([]);
+let choosedSecond = ref("");
+let choosedSecondId = ref(0);
+let secondChoices = ref<any[]>([]);
+let choosedThird = ref("");
+let choosedThirdId = ref(0);
+let thirdChoices = ref<any[]>([]);
+let choosedForth = ref("");
+let choosedForthId = ref(0);
+let forthChoices = ref<any[]>([]);
+let choosedFifth = ref("");
+let choosedFifthId = ref(0);
+let fifthChoices = ref<any[]>([]);
+let institutionItemList = ref<
   {
-    value: "浙江省",
-    label: "浙江省",
-  },
-  {
-    value: "北京市",
-    label: "北京市",
-  },
-  {
-    value: "上海市",
-    label: "上海市",
-  },
-  {
-    value: "广东省",
-    label: "广东省",
-  },
-  {
-    value: "天津市",
-    label: "天津市",
-  },
-  {
-    value: "重庆市",
-    label: "重庆市",
-  },
-  {
-    value: "辽宁省",
-    label: "辽宁省",
-  },
-  {
-    value: "江苏省",
-    label: "江苏省",
-  },
-  {
-    value: "湖北省",
-    label: "湖北省",
-  },
-  {
-    value: "四川省",
-    label: "四川省",
-  },
-  {
-    value: "陕西省",
-    label: "陕西省",
-  },
-  {
-    value: "河北省",
-    label: "河北省",
-  },
-  {
-    value: "河南省",
-    label: "河南省",
-  },
-  {
-    value: "山东省",
-    label: "山东省",
-  },
-  {
-    value: "山西省",
-    label: "山西省",
-  },
-  {
-    value: "福建省",
-    label: "福建省",
-  },
-  {
-    value: "湖南省",
-    label: "湖南省",
-  },
-  {
-    value: "安徽省",
-    label: "安徽省",
-  },
-  {
-    value: "江西省",
-    label: "江西省",
-  },
-  {
-    value: "黑龙江省",
-    label: "黑龙江省",
-  },
-  {
-    value: "吉林省",
-    label: "吉林省",
-  },
-  {
-    value: "云南省",
-    label: "云南省",
-  },
-  {
-    value: "贵州省",
-    label: "贵州省",
-  },
-  {
-    value: "广西壮族自治区",
-    label: "广西壮族自治区",
-  },
-  {
-    value: "西藏自治区",
-    label: "西藏自治区",
-  },
-  {
-    value: "新疆维吾尔自治区",
-    label: "新疆维吾尔自治区",
-  },
-  {
-    value: "甘肃省",
-    label: "甘肃省",
-  },
-  {
-    value: "青海省",
-    label: "青海省",
-  },
-  {
-    value: "宁夏回族自治区",
-    label: "宁夏回族自治区",
-  },
-  {
-    value: "内蒙古自治区",
-    label: "内蒙古自治区",
-  },
-  {
-    value: "海南省",
-    label: "海南省",
-  },
-];
-const choosedSecond = ref("");
-const secondChoices = [
-  {
-    value: "事业单位",
-    label: "事业单位",
-  },
-  {
-    value: "政府部门",
-    label: "政府部门",
-  },
-  {
-    value: "教育机构",
-    label: "教育机构",
-  },
-  {
-    value: "企业",
-    label: "企业",
-  },
-];
-const choosedThird = ref("");
-const thirdChoices = [
-  {
-    value: "浙江省卫健委",
-    label: "浙江省卫健委",
-  },
-  {
-    value: "浙江省财务局",
-    label: "浙江省财务局",
-  },
-  {
-    value: "浙江省林业局",
-    label: "浙江省林业局",
-  },
-];
-const choosedForth = ref("");
-const forthChoices = [
-  {
-    value: "浙江大学第一附属医院",
-    label: "浙江大学第一附属医院",
-  },
-  {
-    value: "浙江省邵逸夫医院",
-    label: "浙江省邵逸夫医院",
-  },
-  {
-    value: "浙江省同德医院",
-    label: "浙江省同德医院",
-  },
-  {
-    value: "浙江省人民医院",
-    label: "浙江省人民医院",
-  },
-];
-const choosedFifth = ref("");
-const fifthChoices = [
-  {
-    value: "浙江大学附属一院",
-    label: "浙江大学附属一院",
-  },
-  {
-    value: "浙江省人民医院",
-    label: "浙江省人民医院",
-  },
-  {
-    value: "浙江大学附属二院",
-    label: "浙江大学附属二院",
-  },
-  {
-    value: "浙江省邵逸夫医院",
-    label: "浙江省邵逸夫医院",
-  },
-  {
-    value: "浙江省中医院",
-    label: "浙江省中医院",
-  },
-  {
-    value: "温州医科大学附属眼视光医院",
-    label: "温州医科大学附属眼视光医院",
-  },
-  {
-    value: "温州医科大学附属口腔医院",
-    label: "温州医科大学附属口腔医院",
-  },
-  {
-    value: "浙江省同德医院",
-    label: "浙江省同德医院",
-  },
-  {
-    value: "浙江中医药大学附属第二医院",
-    label: "浙江中医药大学附属第二医院",
-  },
-  {
-    value: "浙江中医药大学附属第三医院",
-    label: "浙江中医药大学附属第三医院",
-  },
-  {
-    value: "温州医科大学附属第二医院",
-    label: "温州医科大学附属第二医院",
-  },
-];
-const institutionItemList = ref<
-  {
-    institution_id: number;
+    id: number;
     institution_title: string;
     institution_img: string;
     institution_info: string;
@@ -796,107 +399,104 @@ const institutionItemList = ref<
       user_img: string;
     };
   }[]
->([
-  {
-    institution_id: 1,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 1,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 2,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 2,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-  {
-    institution_id: 0,
-    institution_title: "制度标题",
-    institution_img: "https://dummyimage.com/400X400",
-    institution_info: "制度描述信息",
-    created_date: "2023-05-16 16:03:22",
-    poster_info: {
-      user_id: 0,
-      user_name: "用户名称",
-      user_img: "https://dummyimage.com/400X400",
-    },
-  },
-]);
+>([]);
 
+const filterClick = (type: number) => {
+  orgSystemFilterParams.type = type;
+  switch (type) {
+    case 0:
+      orgSystemFilterParams.choice = provincesChoices.value.findIndex(
+        (item: any) => item.value === choosedProvince.value
+      );
+      choosedProvinceId.value =
+        provincesChoices.value[orgSystemFilterParams.choice].id;
+      break;
+    case 1:
+      orgSystemFilterParams.choice = secondChoices.value.findIndex(
+        (item: any) => item.value === choosedSecond.value
+      );
+      choosedSecondId.value =
+        secondChoices.value[orgSystemFilterParams.choice].id;
+      break;
+    case 2:
+      orgSystemFilterParams.choice = thirdChoices.value.findIndex(
+        (item: any) => item.value === choosedThird.value
+      );
+      choosedThirdId.value =
+        thirdChoices.value[orgSystemFilterParams.choice].id;
+      break;
+    case 3:
+      orgSystemFilterParams.choice = forthChoices.value.findIndex(
+        (item: any) => item.value === choosedForth.value
+      );
+      choosedForthId.value =
+        forthChoices.value[orgSystemFilterParams.choice].id;
+      break;
+  }
+  getOrgSystemFilterListAPI(orgSystemFilterParams).then((res: any) => {
+    if (res.data.result_code === 0) {
+      if (res.data.choices_list.length > 0) {
+        switch (orgSystemFilterParams.type) {
+          case 0:
+            secondChoices.value = res.data.choices_list;
+            break;
+          case 1:
+            thirdChoices.value = res.data.choices_list;
+            break;
+          case 2:
+            forthChoices.value = res.data.choices_list;
+            break;
+          case 3:
+            fifthChoices.value = res.data.choices_list;
+            break;
+        }
+      }
+    } else {
+      ElMessage.error("获取单位/企业制度筛选列表失败");
+    }
+  });
+};
+
+const finalChoosing = (item: any) => {
+  choosedFifth.value = item.value;
+  choosedFifthId.value = item.id;
+  orgSystemMapParams.type = `${choosedProvinceId.value}-${choosedSecondId.value}-${choosedThirdId.value}-${choosedForthId.value}-${choosedFifthId.value}`;
+  getOrgSystemMapListAPI(orgSystemMapParams).then((res: any) => {
+    if (res.data.result_code === 0) {
+      if (res.data.org_system_laws_list.length > 0) {
+        institutionItemList.value = res.data.org_system_laws_list;
+      }
+    } else {
+      ElMessage.error("获取单位/企业制度列表失败");
+    }
+  });
+};
 // 在onBeforeMount钩子内部，获取并处理好所有的数据
 onBeforeMount(() => {
+  getProvinceCityFilterListAPI().then((res: any) => {
+    if (res.data.result_code === 0) {
+      if (res.data.province_city_list.length > 0) {
+        cityList.value = res.data.province_city_list;
+        provinceList.value = res.data.province_city_list.map(
+          (item: any) => item.province
+        );
+        provincesChoices.value = res.data.province_city_list.map(
+          (item: any) => {
+            return {
+              id: item.id,
+              value: item.province,
+              label: item.province,
+            };
+          }
+        );
+        city.value = cityList.value[0].city_list[0];
+        cityListFilter.value = cityList.value[0].city_list;
+      }
+    } else {
+      ElMessage.error("获取省份城市列表失败");
+    }
+  });
+
   getNationalMapListAPI(nationalMapParams).then((res: any) => {
     if (res.data.result_code === 0) {
       if (res.data.national_laws_list.length > 0) {
@@ -906,16 +506,26 @@ onBeforeMount(() => {
       ElMessage.error("获取国家法律列表失败");
     }
   });
-
   getGovPolicyMapListAPI(govPolicyMapParams).then((res: any) => {
     if (res.data.result_code === 0) {
       if (res.data.gov_policy_laws_list.length > 0) {
-        governPolicies.value = res.data.gov_policy_list;
+        governPolicies.value = res.data.gov_policy_laws_list;
       }
     } else {
       ElMessage.error("获取政府政策列表失败");
     }
   });
+  getIndustryRegulationsMapListAPI(industryRegulationsMapParams).then(
+    (res: any) => {
+      if (res.data.result_code === 0) {
+        if (res.data.industry_regulations_laws_list.length > 0) {
+          industryReg.value = res.data.industry_regulations_laws_list;
+        }
+      } else {
+        ElMessage.error("获取行业规章列表失败");
+      }
+    }
+  );
 });
 </script>
 
